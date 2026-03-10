@@ -1,5 +1,6 @@
 package com.bruno.demo.service;
 
+import com.bruno.demo.ImageMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,15 +12,18 @@ import java.io.IOException;
 @Service
 public class ImageService {
 
-    WasmService wasmService;
+    private final WasmService wasmService;
+    private final ImageMapper imageMapper;
 
-    public ImageService(WasmService wasmService) {
+    public ImageService(WasmService wasmService, ImageMapper imageMapper) {
         this.wasmService = wasmService;
+        this.imageMapper = imageMapper;
     }
 
     public  byte[] processInversion(MultipartFile image) throws IOException {
         BufferedImage bufferedImage = removeAlpha(ImageIO.read(image.getInputStream()));
 
+        byte[] imageByte = imageMapper.toByte(bufferedImage,);
         return wasmService.invertImage();
     }
 
