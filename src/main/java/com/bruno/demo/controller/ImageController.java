@@ -1,8 +1,8 @@
 package com.bruno.demo.controller;
 
-import com.bruno.demo.dto.MultipartImageDto;
-import com.bruno.demo.model.Image;
 import com.bruno.demo.service.ImageService;
+import org.apache.commons.imaging.ImageWriteException;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +27,8 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @PostMapping
-    public byte[] getInvertedImage(@RequestBody MultipartFile image) throws IOException {
+    @PostMapping(value = "/invert", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] getInvertedImage(@RequestBody MultipartFile image) throws IOException, ImageWriteException {
         return imageService.processInversion(image);
     }
 }
