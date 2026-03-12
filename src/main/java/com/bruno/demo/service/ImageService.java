@@ -1,6 +1,7 @@
 package com.bruno.demo.service;
 
 import com.bruno.demo.ImageMapper;
+import com.bruno.demo.ImagePreprocessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,37 +15,21 @@ public class ImageService {
 
     private final WasmService wasmService;
     private final ImageMapper imageMapper;
+    private final ImagePreprocessor imagePreprocessor;
 
-    public ImageService(WasmService wasmService, ImageMapper imageMapper) {
+    public ImageService(WasmService wasmService, ImageMapper imageMapper, ImagePreprocessor imagePreprocessor) {
         this.wasmService = wasmService;
         this.imageMapper = imageMapper;
+        this.imagePreprocessor = imagePreprocessor;
     }
 
     public  byte[] processInversion(MultipartFile image) throws IOException {
-        BufferedImage bufferedImage = removeAlpha(ImageIO.read(image.getInputStream()));
+        BufferedImage bufferedImage = imagePreprocessor.removeAlpha(ImageIO.read(image.getInputStream()));
 
-        byte[] imageByte = imageMapper.toByte(bufferedImage,);
-        return wasmService.invertImage();
-    }
+        String imageFormat = imageMapper.getFormatFromMultipart(image);
 
-    public BufferedImage removeAlpha(BufferedImage originalImage) {
-        BufferedImage rgbImage = new BufferedImage(
-                originalImage.getWidth(),
-                originalImage.getHeight(),
-                BufferedImage.TYPE_INT_RGB
-        );
+        byte[] imageByte = imageMapper.toByte(bufferedImage,imageFormat);
 
-        Graphics2D g = rgbImage.createGraphics();
-
-        try {
-            g.setPaint(Color.WHITE);
-            g.fillRect(0,0, rgbImage.getWidth(),rgbImage.getHeight());
-
-            g.drawImage(originalImage,0,0,null);
-        } finally {
-            g.dispose();
-        }
-
-        return rgbImage;
+        return wasmService.invertImage(imageByte);
     }
 }
