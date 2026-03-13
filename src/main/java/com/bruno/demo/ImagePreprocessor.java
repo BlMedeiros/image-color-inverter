@@ -12,7 +12,7 @@ public class ImagePreprocessor {
         BufferedImage rgbImage = new BufferedImage(
                 originalImage.getWidth(),
                 originalImage.getHeight(),
-                BufferedImage.TYPE_INT_RGB
+                BufferedImage.TYPE_3BYTE_BGR
         );
 
         Graphics2D g = rgbImage.createGraphics();
